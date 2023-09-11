@@ -9,6 +9,7 @@ pygame.init()
 
 from src.GameConfig import GAME_LEVELS
 from src.GameSimulationOrchestrator import GameSimulationOrchestrator
+from src.ScoreUtils import get_best_agents_and_score_aggregations, show_end_screen
 
 def get_agent_class_from_str(class_str):
     try:
@@ -18,7 +19,8 @@ def get_agent_class_from_str(class_str):
     except (ImportError, AttributeError) as e:
         raise ImportError(class_str)
 
-RANDOM_SEED = 0
+
+RANDOM_SEED = 1
 
 agent_class_string_list = []
 with open('player_agents_list.txt', 'r') as f:
@@ -56,7 +58,16 @@ for agent_class_str in agent_class_string_list:
 
 print(f'Simulation complete, results: {json.dumps(agent_results_dict, indent=2)}')
 
-output_file_name = 'results.json'
-with open(output_file_name, 'w') as output_file:
+winning_agents, winning_agents_scores = get_best_agents_and_score_aggregations(agent_results_dict)
+print(f'\nBest agents = {winning_agents}')
+show_end_screen(winning_agents_scores)
+
+full_output_file_name = 'full_results.json'
+with open(full_output_file_name, 'w') as output_file:
     json.dump(agent_results_dict, output_file)
-    print(f'results saved to {output_file_name}')
+    print(f'full results saved to {full_output_file_name}')
+
+winner_output_file_name = 'winners_results.json'
+with open(winner_output_file_name, 'w') as output_file:
+    json.dump(winning_agents_scores, output_file)
+    print(f'full results saved to {winner_output_file_name}')
